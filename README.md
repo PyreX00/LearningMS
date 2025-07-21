@@ -8,5 +8,5 @@
 - [] Emailing
 - [] Notification
 - [] Payment 
-- [] Deployed
+ [] Deployed
 - [x] Testing and Documentation
