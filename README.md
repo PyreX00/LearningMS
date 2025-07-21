@@ -9,4 +9,4 @@
 - [] Notification
 - [] Payment 
 - [] Deployed
-- [] Testing and Documentation
+- [x] Testing and Documentation
