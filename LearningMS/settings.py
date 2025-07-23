@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     
     'core',
     'MS',
+    'templates',
     
     'rest_framework',
     'django_filters',
@@ -64,7 +65,7 @@ ROOT_URLCONF = 'LearningMS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
