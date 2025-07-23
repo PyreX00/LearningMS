@@ -14,15 +14,26 @@ class SponsorAdmin(admin.ModelAdmin):
     
 admin.site.register(Sponsor, SponsorAdmin)
 
+class StudentCourseInline(admin.TabularInline):
+    model = StudentCourse
+    extra = 1
+    fields = ['student','course','enrollment_date', 'completion_date', 'grade', 'is_completed', 'payment_status', 'notes']
+    readonly_fields = ['enrollment_date']
+    autocomplete_fields = ['student']
+    
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ['id','name','age','gender','email','phone','address','sponsor','enrollment_date','is_active']
     list_filter = ['sponsor']
     search_fields = ['name']
+    inlines = [StudentCourseInline]
+    
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['id','name','description','duration','instructor','category','fee','max_students','created_at','updated_at','is_active']
+    list_display = ['id','name','description','duration','instructor','category','fee','max_students','enrolled_students_count','available_spots','created_at','updated_at','is_active']
+    inlines = [StudentCourseInline]
     
 @admin.register(Instructor)
 class InstructorAdmin(admin.ModelAdmin):
@@ -32,3 +43,9 @@ class InstructorAdmin(admin.ModelAdmin):
 class StudentCourseAdmin(admin.ModelAdmin):
     list_display = ['id','student','course','enrollment_date','completion_date','grade','is_completed','payment_status','notes']
     list_filter = ['is_completed','payment_status']
+    date_hierarchy = 'enrollment_date'
+    list_editable = ['payment_status', 'is_completed','completion_date','notes']
+    
+    readonly_fields = ['enrollment_date']
+
+  
