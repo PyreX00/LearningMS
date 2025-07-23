@@ -21,9 +21,7 @@ class Instructor(models.Model):
     ]
     
     name = models.CharField(max_length=70)
-    age = models.PositiveIntegerField(
-        validators=[MinValueValidator(18), MaxValueValidator(100)]
-    )
+    age = models.PositiveIntegerField( validators=[MinValueValidator(18), MaxValueValidator(100)] )
     gender = models.CharField(
         max_length=1, 
         choices=GENDER_CHOICES, 
@@ -34,7 +32,7 @@ class Instructor(models.Model):
     hire_date = models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return f"{self.name} ({self.get_gender_display()})"
+        return f"{self.name} ({self.gender})"
     
     class Meta:
         ordering = ['name']
