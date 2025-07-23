@@ -78,6 +78,26 @@
     .status-pending { background: #fff3cd; color: #856404; }
     .status-paid { background: #d1ecf1; color: #0c5460; }
     .status-unpaid { background: #f8d7da; color: #721c24; }
+
+    .button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.button-row .btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.button-row .btn:hover {
+  background-color: #ddd;
+}
+
 </style>
 {% endblock %}
 
@@ -194,7 +214,7 @@
         <tbody>
             {% for sponsor_data in students_by_sponsor %}
             <tr>
-                <td>{{ sponsor_data.sponsor|default:"No Sponsor" }}</td>
+                <td>{{ sponsor_data.sponsor__name|default:"No Sponsor" }}</td>
                 <td>{{ sponsor_data.count }}</td>
             </tr>
             {% empty %}
@@ -206,7 +226,9 @@
     </table>
 </div>
 
-<div style="margin-top: 30px;">
-    <a href="{% url 'admin:index' %}" class="button">← Back to Admin</a>
+<div class="button-row">
+  <a href="{% url 'admin:index' %}" class="btn back">← Back to Admin</a>
+  <a href="{% url 'admin:sponsor_dashboard_list' %}" class="btn forward">Sponsor Dashboard →</a>
 </div>
+
 {% endblock %}
