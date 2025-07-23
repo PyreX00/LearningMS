@@ -13,7 +13,7 @@ __Features Included__
 - [ ] Data filtering and Searching
 - [ ] Data pagination
 - [ ] Authentication
-- [ ] Analytics
+- [x] Analytics
 - [ ] Emailing
 - [ ] Notification
 - [ ] Payment 
