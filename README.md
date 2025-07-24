@@ -11,7 +11,7 @@ __Features Included__
 
 - [x] DB Design
 - [ ] Data filtering and Searching
-- [ ] Data pagination
+- [x] Data pagination
 - [ ] Authentication
 - [x] Analytics
 - [ ] Emailing
