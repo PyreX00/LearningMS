@@ -2,13 +2,14 @@ from django.contrib import admin
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count, Q, Sum, Avg, F
 from django.urls import path
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.utils import timezone
 from datetime import datetime, timedelta
-from .models import Category, Sponsor, Student, Course, Instructor, StudentCourse
+from .models import Category, Sponsor, Student, Course, Instructor, StudentCourse,StudentCourseProgress
 from django.contrib.auth.models import Group
 
 def dashboard_view(request):
-    """Custom dashboard view"""
     context = {
         **admin.site.each_context(request),
         'total_students': Student.objects.count(),
@@ -22,10 +23,10 @@ def dashboard_view(request):
         'paid_enrollments': StudentCourse.objects.filter(payment_status='paid').count(),
         'unpaid_enrollments': StudentCourse.objects.filter(payment_status='pending').count(),
         
-        # Recent enrollments
+    
         'recent_enrollments': StudentCourse.objects.select_related('student', 'course').order_by('-enrollment_date')[:5],
         
-        # Students by sponsor
+       
         'students_by_sponsor': Student.objects.values('sponsor__name').annotate(count=Count('id')).order_by('-count')[:5],
     
         'popular_courses': Course.objects.annotate(
@@ -40,13 +41,11 @@ def sponsor_dashboard_list(request):
     sponsors_data = []
     
     for sponsor in Sponsor.objects.all():
-        # Get students sponsored by this sponsor
+    
         sponsored_students = Student.objects.filter(sponsor=sponsor)
         
-        # Get all enrollments for sponsored students
         enrollments = StudentCourse.objects.filter(student__sponsor=sponsor)
         
-        # Calculate metrics
         total_students = sponsored_students.count()
         active_students = sponsored_students.filter(is_active=True).count()
         total_enrollments = enrollments.count()
@@ -153,4 +152,47 @@ class StudentCourseAdmin(admin.ModelAdmin):
     readonly_fields = ['enrollment_date']
 
 admin.site.register(StudentCourse,StudentCourseAdmin)
+
+# Admin class
+class StudentCourseProgressAdmin(admin.ModelAdmin):
+    list_display = [
+        'student_name', 'course_name', 'progress_status', 
+        'overall_progress_percentage', 'attendance_percentage',
+        'assignment_marks', 'is_assignment_overdue'
+    ]
+    list_filter = ['progress_status', 'student_course__course']
+    search_fields = ['student_course__student__name', 'student_course__course__name']
+    
+    fieldsets = (
+        ('Student & Course', {
+            'fields': ('student_course', 'progress_status', 'overall_progress_percentage')
+        }),
+        ('Assignment', {
+            'fields': ('assignment_title', 'assignment_date', 'assignment_due_date', 
+                      'assignment_submission_date', 'assignment_marks')
+        }),
+        ('Attendance', {
+            'fields': ('total_classes', 'classes_attended')
+        }),
+        ('Notes', {
+            'fields': ('instructor_notes', 'last_updated')
+        })
+    )
+    
+    readonly_fields = ['overall_progress_percentage', 'last_updated']
+    
+    def student_name(self, obj):
+        return obj.student_course.student.name
+    
+    def course_name(self, obj):
+        return obj.student_course.course.name
+    
+    def attendance_percentage(self, obj):
+        return f"{obj.attendance_percentage}%"
+    
+    def is_assignment_overdue(self, obj):
+        return obj.is_assignment_overdue
+    is_assignment_overdue.boolean = True
+
+admin.site.register(StudentCourseProgress, StudentCourseProgressAdmin)
 

@@ -4,6 +4,8 @@ from rest_framework.viewsets import ModelViewSet
 from .serializer import CategorySerializer, CourseSerializer, StudentSerializer, StudentCourseSerializer,SponserSerializer, InstructorSerializer
 from rest_framework.pagination import PageNumberPagination
 from .pagination import CategoryPagination
+from django_filters import rest_framework as filters
+from .filters import CourseFilter
 
 # Create your views here.
 class CategoryViewSet(ModelViewSet):
@@ -23,12 +25,16 @@ class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     
     pagination_class = PageNumberPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = (CourseFilter)
     
 class StudentViewSet(ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     
     pagination_class = PageNumberPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('name','is_active')
     
     
 

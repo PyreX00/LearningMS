@@ -1,4 +1,6 @@
 from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
+from django.utils import timezone
 from .models import Category, Instructor,Course,Student,Sponsor,StudentCourse
 
 class CategorySerializer(ModelSerializer):
@@ -12,11 +14,17 @@ class InstructorSerializer(ModelSerializer):
         fields = "__all__"
 
 class StudentSerializer(ModelSerializer):
+    
+    sponsor = serializers.StringRelatedField()
+
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = '__all__' 
+
 
 class CourseSerializer(ModelSerializer):
+    
+    instructor = serializers.StringRelatedField()
     class Meta:
         model = Course
         fields = '__all__'
