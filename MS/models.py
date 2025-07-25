@@ -51,7 +51,7 @@ class Course(models.Model):
     is_active = models.BooleanField(default=True)
     
     def __str__(self):
-        return f"{self.name} - {self.instructor.name}"
+        return f"{self.name}"
     
     @property
     def enrolled_students_count(self):
@@ -101,7 +101,7 @@ class Student(models.Model):
     is_active = models.BooleanField(default=True)
     
     def __str__(self):
-        return f"{self.name} - {self.sponsor.name}"
+        return f"{self.name}"
     
     class Meta:
         ordering = ['name']
