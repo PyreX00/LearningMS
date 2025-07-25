@@ -115,6 +115,7 @@ class StudentCourse(models.Model):
     course = models.ForeignKey( Course, on_delete=models.CASCADE, related_name='enrollments')
     enrollment_date = models.DateField(auto_now_add=True)
     completion_date = models.DateField(blank=True, null=True)
+    
     grade = models.CharField(
         max_length=2,
         choices=[
@@ -155,9 +156,7 @@ class StudentCourse(models.Model):
 
 
 class StudentCourseProgress(models.Model):
-    """
-    Single comprehensive model for tracking student progress in courses
-    """
+
     PROGRESS_STATUS_CHOICES = [
         ('not_started', 'Not Started'),
         ('in_progress', 'In Progress'),
@@ -166,14 +165,13 @@ class StudentCourseProgress(models.Model):
         ('completed', 'Completed'),
     ]
     
-    # Core relationship
+
     student_course = models.OneToOneField(
         'StudentCourse', 
         on_delete=models.CASCADE, 
         related_name='progress'
     )
     
-    # Assignment tracking
     assignment_title = models.CharField(max_length=200, blank=True, null=True)
     assignment_date = models.DateField(blank=True, null=True)
     assignment_due_date = models.DateField(blank=True, null=True)
@@ -183,11 +181,10 @@ class StudentCourseProgress(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
     
-    # Attendance
+
     total_classes = models.IntegerField(default=0)
     classes_attended = models.IntegerField(default=0)
-    
-    # Overall metrics
+
     overall_progress_percentage = models.DecimalField(
         max_digits=5, decimal_places=2, default=0.00,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
@@ -196,7 +193,7 @@ class StudentCourseProgress(models.Model):
         max_length=20, choices=PROGRESS_STATUS_CHOICES, default='not_started'
     )
     
-    # Notes
+    
     instructor_notes = models.TextField(blank=True, null=True)
     last_updated = models.DateTimeField(auto_now=True)
     
@@ -233,7 +230,7 @@ class StudentCourseProgress(models.Model):
             (attendance_score * 0.6) + (assignment_score * 0.4), 2
         )
         
-        # Update status based on progress
+        
         if self.overall_progress_percentage == 0:
             self.progress_status = 'not_started'
         elif self.overall_progress_percentage < 40:

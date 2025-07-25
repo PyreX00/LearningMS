@@ -1,13 +1,9 @@
 from django.contrib import admin
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Count, Q, Sum, Avg, F
+from django.shortcuts import render
+from django.db.models import Count, Sum
 from django.urls import path
-from django.contrib.auth.models import User, Group
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
-from django.utils import timezone
-from datetime import datetime, timedelta
 from .models import Category, Sponsor, Student, Course, Instructor, StudentCourse,StudentCourseProgress
-from django.contrib.auth.models import Group
+from rest_framework.pagination import PageNumberPagination
 
 def dashboard_view(request):
     context = {
@@ -121,11 +117,23 @@ class StudentCourseInline(admin.TabularInline):
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ['id','name','age','gender','email','phone','address','sponsor','enrollment_date','is_active']
+    list_display = ['id','name','age','gender','email','phone','address','sponsor','enrollment_date','is_active','progress_report']
     list_filter = ['sponsor']
     search_fields = ['name']
     inlines = [StudentCourseInline]
 
+
+
+
+    @admin.display(description='Progress Status')
+    def progress_report(self, obj):
+        first_enrollment = obj.enrollments.first()
+        if first_enrollment and hasattr(first_enrollment, 'progress'):
+            student_progress = first_enrollment.progress  # No .first()!
+            if student_progress:
+                return student_progress.progress_status
+        return '-'
+    
 admin.site.register(Student,StudentAdmin)
     
 
@@ -148,21 +156,23 @@ class StudentCourseAdmin(admin.ModelAdmin):
     list_filter = ['is_completed','payment_status']
     date_hierarchy = 'enrollment_date'
     list_editable = ['payment_status', 'is_completed','completion_date','notes']
+    list_per_page = 10
+    search_fields = ['student__name']
     
     readonly_fields = ['enrollment_date']
 
 admin.site.register(StudentCourse,StudentCourseAdmin)
 
-# Admin class
 class StudentCourseProgressAdmin(admin.ModelAdmin):
     list_display = [
         'student_name', 'course_name', 'progress_status', 
         'overall_progress_percentage', 'attendance_percentage',
-        'assignment_marks', 'is_assignment_overdue'
+        'assignment_marks', 'is_assignment_overdue','assignment_due_date'
     ]
     list_filter = ['progress_status', 'student_course__course']
     search_fields = ['student_course__student__name', 'student_course__course__name']
-    
+    list_editable = ['progress_status','assignment_due_date']
+    list_per_page = 20
     fieldsets = (
         ('Student & Course', {
             'fields': ('student_course', 'progress_status', 'overall_progress_percentage')
@@ -175,6 +185,7 @@ class StudentCourseProgressAdmin(admin.ModelAdmin):
             'fields': ('total_classes', 'classes_attended')
         }),
         ('Notes', {
+            # 'classes':["collapse"], just to collapse the fields
             'fields': ('instructor_notes', 'last_updated')
         })
     )

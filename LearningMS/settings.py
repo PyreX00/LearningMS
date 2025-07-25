@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 import os
 
 load_dotenv()
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+    'background_task'
 ]
 
 MIDDLEWARE = [
@@ -151,4 +153,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+
 AUTH_USER_MODEL = 'core.User'
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'be891b1103320e'
+EMAIL_HOST_PASSWORD = 'ffdd4b52714757'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+DEFAULT_FROM_EMAIL = 'ram@gmail.com' 
