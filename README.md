@@ -10,11 +10,11 @@ _Roles_
 __Features Included__
 
 - [x] DB Design
-- [ ] Data filtering and Searching
+- [x] Data filtering and Searching
 - [x] Data pagination
 - [ ] Authentication
 - [x] Analytics
-- [ ] Emailing
+- [x] Emailing
 - [ ] Notification
 - [ ] Payment 
 - [ ] Deployed
