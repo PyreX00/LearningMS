@@ -12,7 +12,7 @@ __Features Included__
 - [x] DB Design
 - [x] Data filtering and Searching
 - [x] Data pagination
-- [ ] Authentication
+- [x] Authentication
 - [x] Analytics
 - [x] Emailing
 - [ ] Notification
