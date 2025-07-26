@@ -41,8 +41,8 @@ A comprehensive Learning Management System built with Django and Django REST Fra
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/lms-platform.git
-cd lms-platform
+git clone https://github.com/PyreX00/LearningMS
+cd LearningMS
 ```
 
 ### 2. Create Virtual Environment
@@ -70,10 +70,7 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-# Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/lms_db
-# For SQLite (development)
-# DATABASE_URL=sqlite:///db.sqlite3
+
 
 # Django Settings
 SECRET_KEY=your-secret-key-here
