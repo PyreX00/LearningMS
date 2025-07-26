@@ -297,10 +297,5 @@ All API responses follow this structure:
 ### Email Templates
 Located in `templates/emails/` directory, customizable for branding.
 
-```
-
-
-
----
 
 **Happy Learning! 🎓**
