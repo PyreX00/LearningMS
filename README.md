@@ -18,4 +18,4 @@ __Features Included__
 - [ ] Notification
 - [ ] Payment 
 - [ ] Deployed
-- [ ] Testing and Documentation
+- [x] Testing and Documentation
