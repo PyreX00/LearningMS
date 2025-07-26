@@ -1,5 +1,6 @@
 amqp==5.3.1
 asgiref==3.9.1
+attrs==25.3.0
 billiard==4.2.1
 celery==5.5.3
 click==8.1.8
@@ -14,6 +15,10 @@ django-filter==25.1
 django-timezone-field==7.1
 django_celery_results==2.6.0
 djangorestframework==3.16.0
+drf-spectacular==0.28.0
+inflection==0.5.1
+jsonschema==4.25.0
+jsonschema-specifications==2025.4.1
 kombu==5.5.4
 packaging==25.0
 prompt_toolkit==3.0.51
@@ -21,9 +26,13 @@ psycopg2==2.9.10
 python-crontab==3.3.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
+PyYAML==6.0.2
+referencing==0.36.2
+rpds-py==0.26.0
 six==1.17.0
 sqlparse==0.5.3
 typing_extensions==4.14.1
 tzdata==2025.2
+uritemplate==4.2.0
 vine==5.1.0
 wcwidth==0.2.13
