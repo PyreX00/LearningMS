@@ -24,11 +24,10 @@ A comprehensive Learning Management System built with Django and Django REST Fra
 ## 🛠 Technology Stack
 
 - **Backend**: Django 4.2+, Django REST Framework
-- **Database**: PostgreSQL (recommended) / SQLite for development
+- **Database**: PostgreSQL
 - **Authentication**: Django built-in authentication with Groups
 - **API Documentation**: DRF Spectacular (Swagger/OpenAPI)
 - **Email**: Django Email Backend
-- **Frontend**: HTML/CSS/JavaScript (can be replaced with React/Vue)
 
 ## 📋 Prerequisites
 
