@@ -4,47 +4,414 @@
 
 {% block title %}Sponsor Dashboard Overview{% endblock %}
 
+{% block extrahead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 300;
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 30px 40px;
+        background: #f8f9fa;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-left: 4px solid #667eea;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card i {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .stat-card p {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .table-container {
+        padding: 40px;
+        background: white;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .table-title {
+        font-size: 1.8rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box input {
+        padding: 12px 20px 12px 45px;
+        border: 2px solid #e1e5e9;
+        border-radius: 25px;
+        font-size: 14px;
+        width: 300px;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .modern-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .modern-table th {
+        padding: 20px 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .modern-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .modern-table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        transform: scale(1.01);
+    }
+
+    .modern-table td {
+        padding: 20px 15px;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .sponsor-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .contact-person {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .metric-value {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .success-rate {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .success-high { 
+        background: #d4edda; 
+        color: #155724; 
+    }
+
+    .success-medium { 
+        background: #fff3cd; 
+        color: #856404; 
+    }
+
+    .success-low { 
+        background: #f8d7da; 
+        color: #721c24; 
+    }
+
+    .utilization-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .progress-bar {
+        width: 80px;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    .progress-high { background: #28a745; }
+    .progress-medium { background: #ffc107; }
+    .progress-low { background: #dc3545; }
+
+    .currency {
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+
+    .no-data i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            margin: 10px;
+        }
+
+        .header {
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            padding: 20px;
+        }
+
+        .table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .search-box input {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="module">
-    <h1>Sponsor Dashboard Overview</h1>
-    
-    <div class="results">
-        <table id="result_list">
+<div class="dashboard-container">
+    <div class="header">
+        <h1>
+            <i class="fas fa-chart-line"></i>
+            Sponsor Dashboard Overview
+        </h1>
+    </div>
+
+    <!-- Display summary statistics calculated in the view -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-building"></i>
+            <h3>{{ summary_stats.total_sponsors }}</h3>
+            <p>Total Sponsors</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <h3>{{ summary_stats.total_students }}</h3>
+            <p>Total Students</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-user-check"></i>
+            <h3>{{ summary_stats.total_active_students }}</h3>
+            <p>Active Students</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-graduation-cap"></i>
+            <h3>{{ summary_stats.total_enrollments }}</h3>
+            <p>Total Enrollments</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-trophy"></i>
+            <h3>{{ summary_stats.total_completed }}</h3>
+            <p>Completed</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-percentage"></i>
+            <h3>{{ summary_stats.avg_success_rate }}%</h3>
+            <p>Avg Success Rate</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-wallet"></i>
+            <h3>${{ summary_stats.total_allocated|floatformat:0 }}</h3>
+            <p>Total Allocated</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-chart-bar"></i>
+            <h3>{{ summary_stats.avg_utilization }}%</h3>
+            <p>Avg Utilization</p>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h2 class="table-title">Detailed Sponsor Metrics</h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search sponsors...">
+            </div>
+        </div>
+
+        <table class="modern-table" id="sponsorTable">
             <thead>
                 <tr>
-                    <th scope="col">Sponsor</th>
-                    <th scope="col">Contact Person</th>
-                    <th scope="col">Total Students</th>
-                    <th scope="col">Active Students</th>
-                    <th scope="col">Total Enrollments</th>
-                    <th scope="col">Completed</th>
-                    <th scope="col">Success Rate</th>
-                    <th scope="col">Funds Allocated</th>
-                    <th scope="col">Funds Utilized</th>
-                    <th scope="col">Utilization Rate</th>
+                    <th><i class="fas fa-building"></i> Sponsor</th>
+                    <th><i class="fas fa-user"></i> Contact Person</th>
+                    <th><i class="fas fa-users"></i> Total Students</th>
+                    <th><i class="fas fa-user-check"></i> Active Students</th>
+                    <th><i class="fas fa-graduation-cap"></i> Total Enrollments</th>
+                    <th><i class="fas fa-trophy"></i> Completed</th>
+                    <th><i class="fas fa-percentage"></i> Success Rate</th>
+                    <th><i class="fas fa-wallet"></i> Funds Allocated</th>
+                    <th><i class="fas fa-money-bill-wave"></i> Funds Utilized</th>
+                    <th><i class="fas fa-chart-bar"></i> Utilization Rate</th>
                 </tr>
             </thead>
             <tbody>
                 {% for data in sponsors_data %}
-                <tr class="{% cycle 'row1' 'row2' %}">
-                    <td><strong>{{ data.sponsor.name }}</strong></td>
-                    <td>{{ data.sponsor.contact_person }}</td>
-                    <td>{{ data.total_students }}</td>
-                    <td>{{ data.active_students }}</td>
-                    <td>{{ data.total_enrollments }}</td>
-                    <td>{{ data.completed_enrollments }}</td>
-                    <td>{{ data.success_rate }}%</td>
-                    <td>${{ data.total_funds_allocated|floatformat:2 }}</td>
-                    <td>${{ data.paid_funds|floatformat:2 }}</td>
+                <tr class="sponsor-row">
                     <td>
-                        <span class="{% if data.utilization_rate >= 80 %}success{% elif data.utilization_rate >= 60 %}warning{% else %}danger{% endif %}">
-                            {{ data.utilization_rate }}%
+                        <div class="sponsor-name">{{ data.sponsor.name }}</div>
+                    </td>
+                    <td>
+                        <div class="contact-person">{{ data.sponsor.contact_person }}</div>
+                    </td>
+                    <td><span class="metric-value">{{ data.total_students }}</span></td>
+                    <td><span class="metric-value">{{ data.active_students }}</span></td>
+                    <td><span class="metric-value">{{ data.total_enrollments }}</span></td>
+                    <td><span class="metric-value">{{ data.completed_enrollments }}</span></td>
+                    <td>
+                        <span class="success-rate {% if data.success_rate >= 80 %}success-high{% elif data.success_rate >= 60 %}success-medium{% else %}success-low{% endif %}">
+                            {{ data.success_rate }}%
                         </span>
+                    </td>
+                    <td><span class="currency">${{ data.total_funds_allocated|floatformat:2 }}</span></td>
+                    <td><span class="currency">${{ data.paid_funds|floatformat:2 }}</span></td>
+                    <td>
+                        <div class="utilization-bar">
+                            <div class="progress-bar">
+                                <div class="progress-fill {% if data.utilization_rate >= 80 %}progress-high{% elif data.utilization_rate >= 60 %}progress-medium{% else %}progress-low{% endif %}" 
+                                     style="width: {{ data.utilization_rate }}%"></div>
+                            </div>
+                            <span class="metric-value">{{ data.utilization_rate }}%</span>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="11">No sponsors found.</td>
+                    <td colspan="10" class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No sponsors found</h3>
+                        <p>There are currently no sponsors in the system.</p>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -52,19 +419,22 @@
     </div>
 </div>
 
-<style>
-.success { color: #28a745; font-weight: bold; }
-.warning { color: #ffc107; font-weight: bold; }
-.danger { color: #dc3545; font-weight: bold; }
-.btn { 
-    padding: 5px 10px; 
-    text-decoration: none; 
-    border-radius: 3px; 
-    font-size: 12px;
-}
-.btn-primary { 
-    background-color: #007cba; 
-    color: white; 
-}
-</style>
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.sponsor-row');
+        
+        rows.forEach(row => {
+            const sponsorName = row.querySelector('.sponsor-name').textContent.toLowerCase();
+            const contactPerson = row.querySelector('.contact-person').textContent.toLowerCase();
+            
+            if (sponsorName.includes(searchTerm) || contactPerson.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}

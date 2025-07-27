@@ -33,51 +33,85 @@ def dashboard_view(request):
     return render(request, 'admin/dashboard.html', context)
 
 def sponsor_dashboard_list(request):
-    """List all sponsors with summary metrics"""
+
     sponsors_data = []
+
+    total_students = 0
+    total_active_students = 0
+    total_enrollments = 0
+    total_completed = 0
+    total_allocated = 0
+    total_paid = 0
+    success_rates = []
+    utilization_rates = []
     
     for sponsor in Sponsor.objects.all():
-    
         sponsored_students = Student.objects.filter(sponsor=sponsor)
-        
         enrollments = StudentCourse.objects.filter(student__sponsor=sponsor)
         
-        total_students = sponsored_students.count()
-        active_students = sponsored_students.filter(is_active=True).count()
-        total_enrollments = enrollments.count()
-        completed_enrollments = enrollments.filter(is_completed=True).count()
+        sponsor_total_students = sponsored_students.count()
+        sponsor_active_students = sponsored_students.filter(is_active=True).count()
+        sponsor_total_enrollments = enrollments.count()
+        sponsor_completed_enrollments = enrollments.filter(is_completed=True).count()
         
         # Fund utilization - total fees for enrolled courses
-        total_funds_allocated = enrollments.aggregate(
+        sponsor_total_funds_allocated = enrollments.aggregate(
             total=Sum('course__fee')
         )['total'] or 0
         
-        paid_funds = enrollments.filter(payment_status='paid').aggregate(
+        sponsor_paid_funds = enrollments.filter(payment_status='paid').aggregate(
             total=Sum('course__fee')
         )['total'] or 0
         
         # Success rate
-        success_rate = (completed_enrollments / total_enrollments * 100) if total_enrollments > 0 else 0
+        sponsor_success_rate = (sponsor_completed_enrollments / sponsor_total_enrollments * 100) if sponsor_total_enrollments > 0 else 0
+        sponsor_utilization_rate = (sponsor_paid_funds / sponsor_total_funds_allocated * 100) if sponsor_total_funds_allocated > 0 else 0
         
         sponsors_data.append({
             'sponsor': sponsor,
-            'total_students': total_students,
-            'active_students': active_students,
-            'total_enrollments': total_enrollments,
-            'completed_enrollments': completed_enrollments,
-            'success_rate': round(success_rate, 1),
-            'total_funds_allocated': total_funds_allocated,
-            'paid_funds': paid_funds,
-            'utilization_rate': round((paid_funds / total_funds_allocated * 100) if total_funds_allocated > 0 else 0, 1)
+            'total_students': sponsor_total_students,
+            'active_students': sponsor_active_students,
+            'total_enrollments': sponsor_total_enrollments,
+            'completed_enrollments': sponsor_completed_enrollments,
+            'success_rate': round(sponsor_success_rate, 1),
+            'total_funds_allocated': sponsor_total_funds_allocated,
+            'paid_funds': sponsor_paid_funds,
+            'utilization_rate': round(sponsor_utilization_rate, 1)
         })
+        
+
+        total_students += sponsor_total_students
+        total_active_students += sponsor_active_students
+        total_enrollments += sponsor_total_enrollments
+        total_completed += sponsor_completed_enrollments
+        total_allocated += sponsor_total_funds_allocated
+        total_paid += sponsor_paid_funds
+        
+        if sponsor_success_rate > 0:
+            success_rates.append(sponsor_success_rate)
+        if sponsor_utilization_rate > 0:
+            utilization_rates.append(sponsor_utilization_rate)
+    
+
+    summary_stats = {
+        'total_sponsors': len(sponsors_data),
+        'total_students': total_students,
+        'total_active_students': total_active_students,
+        'total_enrollments': total_enrollments,
+        'total_completed': total_completed,
+        'avg_success_rate': round(sum(success_rates) / len(success_rates), 1) if success_rates else 0,
+        'total_allocated': total_allocated,
+        'total_paid': total_paid,
+        'avg_utilization': round(sum(utilization_rates) / len(utilization_rates), 1) if utilization_rates else 0
+    }
     
     context = {
         **admin.site.each_context(request),
         'sponsors_data': sponsors_data,
+        'summary_stats': summary_stats,
     }
     
     return render(request, 'admin/sponsor_dashboard_list.html', context)
-
 
 original_get_urls = admin.site.get_urls
 
