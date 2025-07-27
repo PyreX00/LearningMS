@@ -1,14 +1,12 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 from django.conf import settings
-from .models import StudentCourseProgress, StudentCourse
 from django.utils import timezone
 from datetime import timedelta
-from background_task import background
-import logging
+from .models import StudentCourseProgress
 
+import logging
 logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=StudentCourseProgress)
@@ -162,3 +160,74 @@ def send_student_completion_assessment(sender, instance, created, **kwargs):
 
     except Exception as exc:
         logger.error(f"Error sending assessment email: {exc}")
+        
+        
+@receiver(post_save, sender=StudentCourseProgress)
+def checkcheck(sender, instance, **kwargs):
+    try:
+        from datetime import date, timedelta
+        
+        today = date.today()  
+        three_days_later = today + timedelta(days=3)
+        
+        print(f"Today: {today}")
+        
+
+        all_records = StudentCourseProgress.objects.all()
+        print(f"📊 Total StudentCourseProgress records: {all_records.count()}")
+        
+
+        assignments_within_3_days = StudentCourseProgress.objects.filter(
+            assignment_due_date__gte=today,
+            assignment_due_date__lte=three_days_later,
+            assignment_title__isnull=False
+        )
+        print(f"📅 All assignments due within 3 days: {assignments_within_3_days.count()}")
+        
+
+        pending_assignments = assignments_within_3_days.exclude(
+            assignment_submission_date__isnull=False
+        )
+        print(f"⏳ Pending assignments (not submitted): {pending_assignments.count()}")
+        
+        print(f"\n🎯 ALL ASSIGNMENTS DUE WITHIN 3 DAYS:")
+        for record in assignments_within_3_days:
+            days_until_due = (record.assignment_due_date - today).days
+            status = "✅ SUBMITTED" if record.assignment_submission_date else "❌ PENDING"
+            
+            print(f"     👤 Student: {record.student_course.student.name}")
+            print(f"     📖 Course: {record.student_course.course}")
+            print(f"     📋 Assignment: {record.assignment_title}")
+            print(f"     📅 Due Date: {record.assignment_due_date} ({days_until_due} days from today)")
+            print(f"     📊 Status: {status}")
+            if record.assignment_submission_date:
+                print(f"     ✅ Submitted on: {record.assignment_submission_date}")
+            print()
+        
+        urgent_assignments = StudentCourseProgress.objects.filter(
+            assignment_due_date__gte=today,
+            assignment_due_date__lte=three_days_later,
+            assignment_title__isnull=False
+        ).exclude(
+            assignment_submission_date__isnull=False
+        )
+        
+        print(f"🎯 FINAL RESULT: {urgent_assignments.count()} pending assignments found")
+
+
+        if urgent_assignments.exists():
+            print("\n⚠️ PENDING ASSIGNMENTS (NOT SUBMITTED):")
+            for assignment in urgent_assignments:
+                days_until_due = (assignment.assignment_due_date - today).days
+                print(f"   👤 Student: {assignment.student_course.student.name}")
+                print(f"   📖 Course: {assignment.student_course.course}")
+                print(f"   📋 Assignment: {assignment.assignment_title}")
+                print(f"   📅 Due Date: {assignment.assignment_due_date} ({days_until_due} days from today)")
+                print()
+        else:
+            print("\n😊 No pending assignments due within the next 3 days!")
+        
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        import traceback
+        traceback.print_exc()

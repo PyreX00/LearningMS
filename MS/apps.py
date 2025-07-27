@@ -7,3 +7,5 @@ class MsConfig(AppConfig):
     
     def ready(self):
         import MS.signals
+
+            
